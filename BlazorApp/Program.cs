@@ -1,14 +1,17 @@
 using BlazorApp.Components;
+using BlazorApp.Database;
 using BlazorApp.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<DbXContext>(opt=>
+        opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConfig")));
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddServerSideBlazor();
-// Register the ProductService
-builder.Services.AddScoped(sp => new ItemService(builder.Configuration.GetConnectionString("DbConfig")));
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
