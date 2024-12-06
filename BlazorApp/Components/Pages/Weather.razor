@@ -1,0 +1,51 @@
+﻿@page "/weather"
+@using BlazorApp.Models
+@using BlazorApp.Services
+@attribute [StreamRendering]
+
+
+@inject ItemService ProductService
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (list == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in list)
+            {
+                <tr>
+                    <td>@forecast.Id</td>
+                    <td>@forecast.Name</td>
+                    <td>@forecast.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Items> list = new List<Items>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //list = await ProductService.GetProductsAsync();
+    }
+
+    
+}
