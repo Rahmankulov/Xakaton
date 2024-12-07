@@ -7,11 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<DbXContext>(opt=>
-        opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConfig")));
+/*builder.Services.AddDbContext<DbXContext>(opt=>
+        opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConfig")));*/
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddServerSideBlazor();
+// Register the ProductService
+builder.Services.AddScoped(sp => new DbXContext(builder.Configuration.GetConnectionString("PostgreConfig")));
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
@@ -28,7 +30,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseRouting();
 app.UseAntiforgery();
+app.MapControllers();   
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

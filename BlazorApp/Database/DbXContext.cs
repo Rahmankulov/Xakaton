@@ -12,7 +12,7 @@ namespace BlazorApp.Database
             connectionStr = _connection;
         }
 
-        DbSet<Items> Items { get; set; }
+        public DbSet<Items> Items { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
