@@ -3,6 +3,7 @@ using System;
 using BlazorApp.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     [DbContext(typeof(AgroContext))]
-    partial class DbXContextModelSnapshot : ModelSnapshot
+    [Migration("20241207091728_AddAutoinctimentParametr")]
+    partial class AddAutoinctimentParametr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,12 +139,6 @@ namespace BlazorApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("EmployeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("EmployeeResponsibleEmployeeId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("FieldId")
                         .HasColumnType("integer");
 
@@ -150,8 +147,6 @@ namespace BlazorApp.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("SectionFieldId");
-
-                    b.HasIndex("EmployeeResponsibleEmployeeId");
 
                     b.HasIndex("FieldId");
 
@@ -166,16 +161,8 @@ namespace BlazorApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TreeId"));
 
-                    b.Property<string>("ColId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("PlantedDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("RowId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Species")
                         .IsRequired()
@@ -250,17 +237,18 @@ namespace BlazorApp.Migrations
                     b.Property<int>("BlockId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ColId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
 
-                    b.Property<string>("RowId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
 
                     b.HasKey("TreeLocationId");
 
                     b.HasIndex("BlockId");
+
+                    b.HasIndex("Latitude", "Longitude")
+                        .IsUnique();
 
                     b.ToTable("TreeLocations");
                 });
@@ -297,17 +285,11 @@ namespace BlazorApp.Migrations
 
             modelBuilder.Entity("BlazorApp.Models.SectionField", b =>
                 {
-                    b.HasOne("BlazorApp.Models.Employee", "EmployeeResponsible")
-                        .WithMany()
-                        .HasForeignKey("EmployeeResponsibleEmployeeId");
-
                     b.HasOne("BlazorApp.Models.Field", "Field")
                         .WithMany("SectionFields")
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("EmployeeResponsible");
 
                     b.Navigation("Field");
                 });

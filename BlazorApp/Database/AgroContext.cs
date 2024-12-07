@@ -28,6 +28,9 @@ namespace BlazorApp.Database
         }
 
 
+        public AgroContext(DbContextOptions<AgroContext> options) : base(options) { }
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(connectionStr);
@@ -44,8 +47,39 @@ namespace BlazorApp.Database
             modelBuilder.Entity<Employee>().HasKey(p => p.EmployeeId);
             modelBuilder.Entity<EmployeeTask>().HasKey(p => p.TaskId);
             modelBuilder.Entity<LocationHistory>().HasKey(p => p.LocationHistoryId);
-            
-            
+
+            modelBuilder.Entity<Tree>()
+        .Property(t => t.TreeId)
+        .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<TreeBlock>()
+                .Property(tb => tb.BlockId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<TreeLocation>()
+                .Property(tl => tl.TreeLocationId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<TreeHistory>()
+                .Property(th => th.TreeHistoryId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Field>()
+                .Property(f => f.FieldId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Employee>()
+                .Property(e => e.EmployeeId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<EmployeeTask>()
+                .Property(t => t.TaskId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<LocationHistory>()
+                .Property(lh => lh.LocationHistoryId)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<Tree>()
                 .HasOne(t => t.TreeLocation)
                 .WithOne(p => p.Tree).HasForeignKey<TreeLocation>(tl => tl.TreeLocationId);
@@ -103,10 +137,10 @@ namespace BlazorApp.Database
                 .HasForeignKey(lh => lh.TreeLocationId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Ограничение уникальности для координат в TreeLocation
-            modelBuilder.Entity<TreeLocation>()
-                .HasIndex(tl => new { tl.Latitude, tl.Longitude })
-                .IsUnique();
+            //// Ограничение уникальности для координат в TreeLocation
+            //modelBuilder.Entity<TreeLocation>()
+            //    .HasIndex(tl => new { tl.Latitude, tl.Longitude })
+            //    .IsUnique();
 
             // Установка значения по умолчанию для Enum (Role)
             modelBuilder.Entity<Employee>()
@@ -127,6 +161,10 @@ namespace BlazorApp.Database
                 .WithOne(tb => tb.SectionField)
                 .HasForeignKey(tb => tb.SectionFieldId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Employee>()
+                .Property(e => e.Role)
+                .HasConversion<string>(); // Enum stored as string
         }
 
 

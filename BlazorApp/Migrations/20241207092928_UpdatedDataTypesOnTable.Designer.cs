@@ -3,6 +3,7 @@ using System;
 using BlazorApp.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     [DbContext(typeof(AgroContext))]
-    partial class DbXContextModelSnapshot : ModelSnapshot
+    [Migration("20241207092928_UpdatedDataTypesOnTable")]
+    partial class UpdatedDataTypesOnTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,17 +253,18 @@ namespace BlazorApp.Migrations
                     b.Property<int>("BlockId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ColId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
 
-                    b.Property<string>("RowId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
 
                     b.HasKey("TreeLocationId");
 
                     b.HasIndex("BlockId");
+
+                    b.HasIndex("Latitude", "Longitude")
+                        .IsUnique();
 
                     b.ToTable("TreeLocations");
                 });

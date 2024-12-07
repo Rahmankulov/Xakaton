@@ -1,0 +1,68 @@
+﻿@page "/employee-edit/{EmployeeId:int?}"
+@rendermode InteractiveServer
+@using BlazorApp.Models
+@using BlazorApp.Services
+@using static BlazorApp.Database.AgroContext
+
+@inject EmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+
+<h3>@(EmployeeId == null ? "Create Employee" : "Edit Employee")</h3>
+
+<EditForm Model="employee" OnValidSubmit="SaveEmployee" FormName="EmployeeForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <InputText class="form-control" @bind-Value="employee.FullName" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Role</label>
+        <InputSelect class="form-select" @bind-Value="employee.Role">
+            @foreach (var role in Enum.GetValues<Role>())
+            {
+                <option value="@role">@role</option>
+            }
+        </InputSelect>
+    </div>
+    <button class="btn btn-primary" type="submit">Save</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? EmployeeId { get; set; }
+
+    private Employee employee = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (EmployeeId != null)
+        {
+            var existingEmployee = await EmployeeService.GetEmployeeByIdAsync(EmployeeId.Value);
+            if (existingEmployee != null)
+            {
+                employee = existingEmployee;
+            }
+        }
+    }
+
+    private async Task SaveEmployee()
+    {
+        if (EmployeeId == null)
+        {
+            await EmployeeService.AddEmployeeAsync(employee);
+        }
+        else
+        {
+            await EmployeeService.UpdateEmployeeAsync(employee);
+        }
+
+        NavigationManager.NavigateTo("/employees");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/employees");
+    }
+}

@@ -7,18 +7,29 @@ using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-/*builder.Services.AddDbContext<AgroContext>(opt=>
-        opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConfig")));
-*/builder.Services.AddRazorComponents()
+
+builder.Services.AddDbContext<AgroContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConfig")));
+
+builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddServerSideBlazor();
-// Register the ProductService
+
+
+builder.Services.AddScoped<EmployeeService>();
+
+builder.Services.AddScoped<TreeService>();
+
 builder.Services.AddScoped(sp => new AgroContext(builder.Configuration.GetConnectionString("PostgreConfig")));
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
-var app = builder.Build();
 
+
+
+
+
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

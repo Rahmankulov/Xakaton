@@ -1,0 +1,66 @@
+﻿@page "/trees"
+@rendermode InteractiveServer
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject TreeService TreeService
+@inject NavigationManager NavigationManager
+
+<h3>Trees</h3>
+
+@if (trees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <button class="btn btn-primary mb-2" @onclick="CreateTree">Add Tree</button>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Species</th>
+                <th>Location</th>
+                <th>Planted Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tree in trees)
+            {
+                <tr>
+                    <td>@tree.Species</td>
+                    <td>@tree.TreeLocation?.RowId, @tree.TreeLocation?.ColId</td>
+                    <td>@tree.PlantedDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <button class="btn btn-warning" @onclick="() => EditTree(tree.TreeId)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteTree(tree.TreeId)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Tree>? trees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        trees = await TreeService.GetAllTreesAsync();
+    }
+
+    private void CreateTree()
+    {
+        NavigationManager.NavigateTo("/tree-edit");
+    }
+
+    private void EditTree(int id)
+    {
+        NavigationManager.NavigateTo($"/tree-edit/{id}");
+    }
+
+    private async Task DeleteTree(int id)
+    {
+        await TreeService.DeleteTreeAsync(id);
+        trees = await TreeService.GetAllTreesAsync();
+    }
+}

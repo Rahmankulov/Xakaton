@@ -1,0 +1,71 @@
+﻿@page "/tree-edit/{TreeId:int?}"
+@rendermode InteractiveServer
+@using BlazorApp.Models
+@using BlazorApp.Services
+
+@inject TreeService TreeService
+@inject NavigationManager NavigationManager
+
+<h3>@(TreeId != null ? "Edit Tree" : "Add Tree")</h3>
+
+<EditForm Model="@tree" OnValidSubmit="@HandleValidSubmit" FormName="TreeEdit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Species">Species</label>
+        <InputText id="Species" class="form-control" @bind-Value="tree.Species" />
+    </div>
+
+    <div class="form-group">
+        <label for="PlantedDate">Planted Date</label>
+        <InputDate id="PlantedDate" class="form-control" @bind-Value="tree.PlantedDate" />
+    </div>
+    <div class="form-group">
+        <label for="Latitude">Status</label>
+        <InputText id="Latitude" class="form-control" @bind-Value="tree.TreeStatus" />
+    </div>
+    @*
+    <div class="form-group">
+        <label for="Longitude">Col</label>
+        <InputText id="Longitude" class="form-control" @bind-Value="tree.ColId" />
+    </div> *@
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    private Tree tree = new Tree();
+
+    [Parameter]
+    public int? TreeId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TreeId != null)
+        {
+            if( int.TryParse(NavigationManager.Uri.Split('/').LastOrDefault(), out int id)) TreeId = id;
+            tree = await TreeService.GetTreeByIdAsync(TreeId.Value);
+        }
+        else{
+            tree.TreeLocation = new TreeLocation(); // Initialize TreeLocation for new tree
+            tree.History = new List<TreeHistory>();
+            tree.History.Add(new TreeHistory() { 
+                Description = "Planted", 
+                Date = DateTime.UtcNow });
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (TreeId != null)
+    {
+            await TreeService.UpdateTreeAsync(tree);
+        }
+        else
+        {
+            await TreeService.CreateTreeAsync(tree);
+        }
+        NavigationManager.NavigateTo("/trees");
+    }
+}

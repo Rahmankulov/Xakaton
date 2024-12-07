@@ -1,0 +1,71 @@
+﻿@page "/employees"
+@rendermode InteractiveServer
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject EmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+
+<h3>Employees</h3>
+
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <button class="btn btn-primary mb-2" @onclick="CreateEmployee">Add Employee</button>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in employees)
+            {
+                <tr>
+                    <td>@employee.FullName</td>
+                    <td>@employee.Role</td>
+                    <td>
+                        <button class="btn btn-warning" @onclick="() => EditEmployee(employee.EmployeeId)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee.EmployeeId)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Employee>? employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await EmployeeService.GetAllEmployeesAsync();
+    }
+
+    private void CreateEmployee()
+    {
+        Console.WriteLine($"Navigating to edit employee");
+
+        // Navigating to the edit page for the employee
+        
+        NavigationManager.NavigateTo("/employee-edit");
+    }
+
+    private void EditEmployee(int id)
+    {
+        Console.WriteLine($"Navigating to edit employee with ID: {id}");
+
+        
+        NavigationManager.NavigateTo($"/employee-edit/{id}");
+    }
+
+    private async Task DeleteEmployee(int id)
+    {
+        await EmployeeService.DeleteEmployeeAsync(id);
+        employees = await EmployeeService.GetAllEmployeesAsync();
+    }
+}

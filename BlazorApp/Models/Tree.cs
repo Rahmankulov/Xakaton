@@ -7,8 +7,9 @@ namespace BlazorApp.Models
         public int TreeId { get; set; }
         public string Species { get; set; } // Вид дерева
         public DateTime PlantedDate { get; set; }
-        public int TreeLocationId { get; set; }
-        public TreeLocation TreeLocation { get; set; }
+        public int? TreeLocationId { get; set; }
+        public string TreeStatus { get; set; }
+        public TreeLocation? TreeLocation { get; set; }
         public ICollection<TreeHistory> History { get; set; }
     }
 }
