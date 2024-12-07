@@ -48,7 +48,7 @@
             tree = await TreeService.GetTreeByIdAsync(TreeId.Value);
         }
         else{
-            tree.TreeLocation = new TreeLocation(); // Initialize TreeLocation for new tree
+            //tree.TreeLocation = new TreeLocation(); // Initialize TreeLocation for new tree
             tree.History = new List<TreeHistory>();
             tree.History.Add(new TreeHistory() { 
                 Description = "Planted", 
