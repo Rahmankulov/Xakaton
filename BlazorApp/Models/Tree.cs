@@ -10,6 +10,6 @@ namespace BlazorApp.Models
         public int? TreeLocationId { get; set; }
         public StatusTree TreeStatus { get; set; }
         public TreeLocation? TreeLocation { get; set; }
-        public ICollection<TreeHistory> History { get; set; }
+        public ICollection<TreeHistory>? History { get; set; }
     }
 }

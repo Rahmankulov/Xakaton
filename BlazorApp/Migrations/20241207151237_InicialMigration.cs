@@ -7,14 +7,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     /// <inheritdoc />
-    public partial class InitAgro : Migration
+    public partial class InicialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Items");
-
             migrationBuilder.CreateTable(
                 name: "Employees",
                 columns: table => new
@@ -22,25 +19,12 @@ namespace BlazorApp.Migrations
                     EmployeeId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FullName = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false, defaultValue: 3)
+                    Role = table.Column<string>(type: "text", nullable: false, defaultValue: "Gardener"),
+                    Login = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Employees", x => x.EmployeeId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Fields",
-                columns: table => new
-                {
-                    FieldId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Fields", x => x.FieldId);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,7 +35,8 @@ namespace BlazorApp.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Species = table.Column<string>(type: "text", nullable: false),
                     PlantedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TreeLocationId = table.Column<int>(type: "integer", nullable: false)
+                    TreeLocationId = table.Column<int>(type: "integer", nullable: true),
+                    TreeStatus = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,27 +44,28 @@ namespace BlazorApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TreeBlocks",
+                name: "Fields",
                 columns: table => new
                 {
-                    BlockId = table.Column<int>(type: "integer", nullable: false)
+                    FieldId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    FieldId = table.Column<int>(type: "integer", nullable: false)
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    EmployeeResponsibleEmployeeId = table.Column<int>(type: "integer", nullable: true),
+                    EmployeId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TreeBlocks", x => x.BlockId);
+                    table.PrimaryKey("PK_Fields", x => x.FieldId);
                     table.ForeignKey(
-                        name: "FK_TreeBlocks_Fields_FieldId",
-                        column: x => x.FieldId,
-                        principalTable: "Fields",
-                        principalColumn: "FieldId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Fields_Employees_EmployeeResponsibleEmployeeId",
+                        column: x => x.EmployeeResponsibleEmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeId");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "EmployeeTasks",
                 columns: table => new
                 {
                     TaskId = table.Column<int>(type: "integer", nullable: false)
@@ -92,15 +78,15 @@ namespace BlazorApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.TaskId);
+                    table.PrimaryKey("PK_EmployeeTasks", x => x.TaskId);
                     table.ForeignKey(
-                        name: "FK_Tasks_Employees_EmployeeId",
+                        name: "FK_EmployeeTasks_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
                         principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Tasks_Trees_TreeId",
+                        name: "FK_EmployeeTasks_Trees_TreeId",
                         column: x => x.TreeId,
                         principalTable: "Trees",
                         principalColumn: "TreeId",
@@ -129,13 +115,74 @@ namespace BlazorApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SectionFields",
+                columns: table => new
+                {
+                    SectionFieldId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    FieldId = table.Column<int>(type: "integer", nullable: false),
+                    EmployeeResponsibleEmployeeId = table.Column<int>(type: "integer", nullable: true),
+                    EmployeId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SectionFields", x => x.SectionFieldId);
+                    table.ForeignKey(
+                        name: "FK_SectionFields_Employees_EmployeeResponsibleEmployeeId",
+                        column: x => x.EmployeeResponsibleEmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeId");
+                    table.ForeignKey(
+                        name: "FK_SectionFields_Fields_FieldId",
+                        column: x => x.FieldId,
+                        principalTable: "Fields",
+                        principalColumn: "FieldId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TreeBlocks",
+                columns: table => new
+                {
+                    BlockId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Height = table.Column<double>(type: "double precision", nullable: false),
+                    Width = table.Column<double>(type: "double precision", nullable: false),
+                    RowSpacing = table.Column<double>(type: "double precision", nullable: false),
+                    ColSpacing = table.Column<double>(type: "double precision", nullable: false),
+                    LocationCount = table.Column<int>(type: "integer", nullable: false),
+                    SectionFieldId = table.Column<int>(type: "integer", nullable: true),
+                    FieldId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TreeBlocks", x => x.BlockId);
+                    table.ForeignKey(
+                        name: "FK_TreeBlocks_Fields_FieldId",
+                        column: x => x.FieldId,
+                        principalTable: "Fields",
+                        principalColumn: "FieldId");
+                    table.ForeignKey(
+                        name: "FK_TreeBlocks_SectionFields_SectionFieldId",
+                        column: x => x.SectionFieldId,
+                        principalTable: "SectionFields",
+                        principalColumn: "SectionFieldId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TreeLocations",
                 columns: table => new
                 {
                     TreeLocationId = table.Column<int>(type: "integer", nullable: false),
                     BlockId = table.Column<int>(type: "integer", nullable: false),
-                    Latitude = table.Column<double>(type: "double precision", nullable: false),
-                    Longitude = table.Column<double>(type: "double precision", nullable: false)
+                    RowId = table.Column<string>(type: "text", nullable: false),
+                    ColId = table.Column<string>(type: "text", nullable: false),
+                    QRCode = table.Column<string>(type: "text", nullable: false),
+                    LocationTreeStatus = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -176,24 +223,44 @@ namespace BlazorApp.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmployeeTasks_EmployeeId",
+                table: "EmployeeTasks",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeTasks_TreeId",
+                table: "EmployeeTasks",
+                column: "TreeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Fields_EmployeeResponsibleEmployeeId",
+                table: "Fields",
+                column: "EmployeeResponsibleEmployeeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LocationHistories_TreeLocationId",
                 table: "LocationHistories",
                 column: "TreeLocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_EmployeeId",
-                table: "Tasks",
-                column: "EmployeeId");
+                name: "IX_SectionFields_EmployeeResponsibleEmployeeId",
+                table: "SectionFields",
+                column: "EmployeeResponsibleEmployeeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TreeId",
-                table: "Tasks",
-                column: "TreeId");
+                name: "IX_SectionFields_FieldId",
+                table: "SectionFields",
+                column: "FieldId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TreeBlocks_FieldId",
                 table: "TreeBlocks",
                 column: "FieldId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TreeBlocks_SectionFieldId",
+                table: "TreeBlocks",
+                column: "SectionFieldId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TreeHistories_TreeId",
@@ -204,22 +271,16 @@ namespace BlazorApp.Migrations
                 name: "IX_TreeLocations_BlockId",
                 table: "TreeLocations",
                 column: "BlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TreeLocations_Latitude_Longitude",
-                table: "TreeLocations",
-                columns: new[] { "Latitude", "Longitude" },
-                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LocationHistories");
+                name: "EmployeeTasks");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "LocationHistories");
 
             migrationBuilder.DropTable(
                 name: "TreeHistories");
@@ -228,30 +289,19 @@ namespace BlazorApp.Migrations
                 name: "TreeLocations");
 
             migrationBuilder.DropTable(
-                name: "Employees");
-
-            migrationBuilder.DropTable(
                 name: "TreeBlocks");
 
             migrationBuilder.DropTable(
                 name: "Trees");
 
             migrationBuilder.DropTable(
+                name: "SectionFields");
+
+            migrationBuilder.DropTable(
                 name: "Fields");
 
-            migrationBuilder.CreateTable(
-                name: "Items",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<double>(type: "double precision", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Items", x => x.Id);
-                });
+            migrationBuilder.DropTable(
+                name: "Employees");
         }
     }
 }

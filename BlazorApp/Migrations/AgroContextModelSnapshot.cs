@@ -3,7 +3,6 @@ using System;
 using BlazorApp.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,11 +11,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     [DbContext(typeof(AgroContext))]
-    [Migration("20241207102211_AddedTreeStatus")]
-    partial class AddedTreeStatus
+    partial class AgroContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,6 +31,10 @@ namespace BlazorApp.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EmployeeId"));
 
                     b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -93,11 +94,19 @@ namespace BlazorApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("EmployeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("EmployeeResponsibleEmployeeId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("FieldId");
+
+                    b.HasIndex("EmployeeResponsibleEmployeeId");
 
                     b.ToTable("Fields");
                 });
@@ -196,15 +205,30 @@ namespace BlazorApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BlockId"));
 
-                    b.Property<int>("FieldId")
+                    b.Property<double>("ColSpacing")
+                        .HasColumnType("double precision");
+
+                    b.Property<int?>("FieldId")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Height")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("LocationCount")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("SectionFieldId")
+                    b.Property<double>("RowSpacing")
+                        .HasColumnType("double precision");
+
+                    b.Property<int?>("SectionFieldId")
                         .HasColumnType("integer");
+
+                    b.Property<double>("Width")
+                        .HasColumnType("double precision");
 
                     b.HasKey("BlockId");
 
@@ -253,6 +277,14 @@ namespace BlazorApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("LocationTreeStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("QRCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("RowId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -281,6 +313,15 @@ namespace BlazorApp.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("Tree");
+                });
+
+            modelBuilder.Entity("BlazorApp.Models.Field", b =>
+                {
+                    b.HasOne("BlazorApp.Models.Employee", "EmployeeResponsible")
+                        .WithMany()
+                        .HasForeignKey("EmployeeResponsibleEmployeeId");
+
+                    b.Navigation("EmployeeResponsible");
                 });
 
             modelBuilder.Entity("BlazorApp.Models.LocationHistory", b =>
@@ -313,19 +354,14 @@ namespace BlazorApp.Migrations
 
             modelBuilder.Entity("BlazorApp.Models.TreeBlock", b =>
                 {
-                    b.HasOne("BlazorApp.Models.Field", "Field")
+                    b.HasOne("BlazorApp.Models.Field", null)
                         .WithMany("Blocks")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FieldId");
 
                     b.HasOne("BlazorApp.Models.SectionField", "SectionField")
                         .WithMany("TreeBlocks")
                         .HasForeignKey("SectionFieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Field");
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("SectionField");
                 });

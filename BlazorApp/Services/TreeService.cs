@@ -37,6 +37,7 @@ namespace BlazorApp.Services
         // Обновить дерево
         public async Task UpdateTreeAsync(Tree tree)
         {
+            tree.PlantedDate = tree.PlantedDate.ToUniversalTime();
             _context.Trees.Update(tree);
             await _context.SaveChangesAsync();
         }

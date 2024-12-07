@@ -50,14 +50,14 @@
     </div>
 
     <button type="submit" class="btn btn-success" >Save</button>
-    
+
 </EditForm>
 
 <button class="btn btn-primary" @onclick="GenerateQRCodes">Generate QR Codes</button>
 
 @foreach (var qrCode in qrCodeBase64List)
 {
-    <img src="@qrCode" alt="QR Code" />
+    <img src="@($"data:image/svg+xml;base64,{@qrCode}")" alt="QR Code" width="60" height="60" />
 }
 
 @code {
@@ -81,34 +81,46 @@
 
     private async Task GenerateQRCodes()
     {
-        string[] dataToEncode = { "https://example.com/1", 
-        "https://example.com/2", "https://example.com/3", 
-        "https://example.com/4", "https://example.com/5" };
+        //считывание количество деревя в одном блоке по ширине и высоте
+        int rowCount = (int)(treeBlock.Width / treeBlock.RowSpacing);
+        int colCount = (int)(treeBlock.Height / treeBlock.ColSpacing);
+        treeBlock.LocationCount = rowCount * colCount;
+        treeBlock.TreeLocations = new List<TreeLocation>();
 
-        for (int i = 0; i < dataToEncode.Length; i++)
-        {
-            string data = dataToEncode[i];
 
-            // Генерация QR-кода
-            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q))
-            using (SvgQRCode qrCode = new SvgQRCode(qrCodeData))
-            {
-
-                string qrCodeImage = qrCode.GetGraphic(20); // 20 - размер пикселя
-                using (MemoryStream ms = new MemoryStream())
+        for(int i = 1 ; i <= rowCount; i++){
+            for(int j = 1 ; j <= colCount; j++){
+                TreeLocation treeLocation = new();
+                treeLocation.RowId = i.ToString();
+                treeLocation.ColId = j.ToString();
+                string dataString = Guid.NewGuid().ToString();
+                using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+                using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(dataString, QRCodeGenerator.ECCLevel.Q))
+                using (SvgQRCode qrCode = new SvgQRCode(qrCodeData))
                 {
-                    byte[] svgBytes = Encoding.UTF8.GetBytes(qrCodeImage);
-                    ms.Write(svgBytes, 0, svgBytes.Length);
-                    ms.Position = 0;
-                    // Конвертация в Base64
-                    string base64Image = Convert.ToBase64String(ms.ToArray());
-                    qrCodeBase64List.Add($"data:image/png;base64,{base64Image}");
+
+                    string qrCodeImage = qrCode.GetGraphic(20); // 20 - размер пикселя
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        byte[] svgBytes = Encoding.UTF8.GetBytes(qrCodeImage);
+                        ms.Write(svgBytes, 0, svgBytes.Length);
+                        ms.Position = 0;
+                        // Конвертация в Base64
+                        string base64Image = Convert.ToBase64String(ms.ToArray());
+                        treeLocation.QRCode = base64Image;
+                        qrCodeBase64List.Add(base64Image);
+                    }
                 }
+                treeLocation.LocationTreeStatus = Database.AgroContext.LocationTreeStatus.Available;
+                
+                treeBlock.TreeLocations.Add(treeLocation);
+
             }
         }
+           
 
-        Console.WriteLine("Все QR-коды успешно созданы.");
+
+        
     }
 
 
