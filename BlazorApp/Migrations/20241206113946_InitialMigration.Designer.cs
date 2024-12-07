@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BlazorApp.Migrations
 {
-    [DbContext(typeof(DbXContext))]
+    [DbContext(typeof(AgroContext))]
     [Migration("20241206113946_InitialMigration")]
     partial class InitialMigration
     {

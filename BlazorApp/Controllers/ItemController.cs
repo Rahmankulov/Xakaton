@@ -8,24 +8,25 @@ namespace BlazorApp.Controllers
     [ApiController]
     public class ItemController:ControllerBase
     {
-        DbXContext context;
-        public ItemController(DbXContext _context)
+        AgroContext context;
+        public ItemController(AgroContext _context)
         {
             context = _context;
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [Route("items")]
         public async Task<List<Items>> GetItems(int id)
         {
             if(id <= 0)
             {
-                return await Task.FromResult(context.Items.ToList());
+                //return await Task.FromResult(context.Items.ToList());
             }
             else
             {
-                return await Task.FromResult(context.Items.Where(i=>i.Id == id).ToList());
+                //return await Task.FromResult(context.Items.Where(i=>i.Id == id).ToList());
             }
-        }
+            return null;
+        }*/
     }
 }

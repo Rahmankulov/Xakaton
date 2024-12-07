@@ -11,7 +11,7 @@
 
 <p>This component demonstrates showing data.</p>
 
-@if (list == null)
+@if (true)
 {
     <p><em>Loading...</em></p>
 }
@@ -26,21 +26,21 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in list)
+            @* @foreach (var forecast in list)
             {
                 <tr>
                     <td>@forecast.Id</td>
                     <td>@forecast.Name</td>
                     <td>@forecast.Price</td>
                 </tr>
-            }
+            } *@
         </tbody>
     </table>
 }
 
 @code {
 
-    private List<Items> list = new List<Items>();
+    //private List<Items> list = new List<Items>();
 
     protected override async Task OnInitializedAsync()
     {

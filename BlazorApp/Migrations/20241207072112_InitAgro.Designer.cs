@@ -3,6 +3,7 @@ using System;
 using BlazorApp.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     [DbContext(typeof(AgroContext))]
-    partial class DbXContextModelSnapshot : ModelSnapshot
+    [Migration("20241207072112_InitAgro")]
+    partial class InitAgro
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace BlazorApp.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BlazorApp.Models.Employee", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Employee", b =>
                 {
                     b.Property<int>("EmployeeId")
                         .ValueGeneratedOnAdd()
@@ -44,7 +47,53 @@ namespace BlazorApp.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.EmployeeTask", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Field", b =>
+                {
+                    b.Property<int>("FieldId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FieldId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("FieldId");
+
+                    b.ToTable("Fields");
+                });
+
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+LocationHistory", b =>
+                {
+                    b.Property<int>("LocationHistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LocationHistoryId"));
+
+                    b.Property<string>("ChangeDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TreeLocationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("LocationHistoryId");
+
+                    b.HasIndex("TreeLocationId");
+
+                    b.ToTable("LocationHistories");
+                });
+
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Task", b =>
                 {
                     b.Property<int>("TaskId")
                         .ValueGeneratedOnAdd()
@@ -74,82 +123,10 @@ namespace BlazorApp.Migrations
 
                     b.HasIndex("TreeId");
 
-                    b.ToTable("EmployeeTasks");
+                    b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.Field", b =>
-                {
-                    b.Property<int>("FieldId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FieldId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("FieldId");
-
-                    b.ToTable("Fields");
-                });
-
-            modelBuilder.Entity("BlazorApp.Models.LocationHistory", b =>
-                {
-                    b.Property<int>("LocationHistoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LocationHistoryId"));
-
-                    b.Property<string>("ChangeDescription")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("TreeLocationId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("LocationHistoryId");
-
-                    b.HasIndex("TreeLocationId");
-
-                    b.ToTable("LocationHistories");
-                });
-
-            modelBuilder.Entity("BlazorApp.Models.SectionField", b =>
-                {
-                    b.Property<int>("SectionFieldId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SectionFieldId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("FieldId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("SectionFieldId");
-
-                    b.HasIndex("FieldId");
-
-                    b.ToTable("SectionFields");
-                });
-
-            modelBuilder.Entity("BlazorApp.Models.Tree", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Tree", b =>
                 {
                     b.Property<int>("TreeId")
                         .ValueGeneratedOnAdd()
@@ -172,7 +149,7 @@ namespace BlazorApp.Migrations
                     b.ToTable("Trees");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.TreeBlock", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeBlock", b =>
                 {
                     b.Property<int>("BlockId")
                         .ValueGeneratedOnAdd()
@@ -187,19 +164,14 @@ namespace BlazorApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("SectionFieldId")
-                        .HasColumnType("integer");
-
                     b.HasKey("BlockId");
 
                     b.HasIndex("FieldId");
 
-                    b.HasIndex("SectionFieldId");
-
                     b.ToTable("TreeBlocks");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.TreeHistory", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeHistory", b =>
                 {
                     b.Property<int>("TreeHistoryId")
                         .ValueGeneratedOnAdd()
@@ -224,7 +196,7 @@ namespace BlazorApp.Migrations
                     b.ToTable("TreeHistories");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.TreeLocation", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeLocation", b =>
                 {
                     b.Property<int>("TreeLocationId")
                         .HasColumnType("integer");
@@ -248,15 +220,26 @@ namespace BlazorApp.Migrations
                     b.ToTable("TreeLocations");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.EmployeeTask", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+LocationHistory", b =>
                 {
-                    b.HasOne("BlazorApp.Models.Employee", "Employee")
+                    b.HasOne("BlazorApp.Database.AgroContext+TreeLocation", "TreeLocation")
+                        .WithMany("History")
+                        .HasForeignKey("TreeLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TreeLocation");
+                });
+
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Task", b =>
+                {
+                    b.HasOne("BlazorApp.Database.AgroContext+Employee", "Employee")
                         .WithMany("Tasks")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
-                    b.HasOne("BlazorApp.Models.Tree", "Tree")
+                    b.HasOne("BlazorApp.Database.AgroContext+Tree", "Tree")
                         .WithMany()
                         .HasForeignKey("TreeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -267,50 +250,20 @@ namespace BlazorApp.Migrations
                     b.Navigation("Tree");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.LocationHistory", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeBlock", b =>
                 {
-                    b.HasOne("BlazorApp.Models.TreeLocation", "TreeLocation")
-                        .WithMany("History")
-                        .HasForeignKey("TreeLocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TreeLocation");
-                });
-
-            modelBuilder.Entity("BlazorApp.Models.SectionField", b =>
-                {
-                    b.HasOne("BlazorApp.Models.Field", "Field")
-                        .WithMany("SectionFields")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Field");
-                });
-
-            modelBuilder.Entity("BlazorApp.Models.TreeBlock", b =>
-                {
-                    b.HasOne("BlazorApp.Models.Field", "Field")
+                    b.HasOne("BlazorApp.Database.AgroContext+Field", "Field")
                         .WithMany("Blocks")
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlazorApp.Models.SectionField", "SectionField")
-                        .WithMany("TreeBlocks")
-                        .HasForeignKey("SectionFieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Field");
-
-                    b.Navigation("SectionField");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.TreeHistory", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeHistory", b =>
                 {
-                    b.HasOne("BlazorApp.Models.Tree", "Tree")
+                    b.HasOne("BlazorApp.Database.AgroContext+Tree", "Tree")
                         .WithMany("History")
                         .HasForeignKey("TreeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -319,17 +272,17 @@ namespace BlazorApp.Migrations
                     b.Navigation("Tree");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.TreeLocation", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeLocation", b =>
                 {
-                    b.HasOne("BlazorApp.Models.TreeBlock", "Block")
+                    b.HasOne("BlazorApp.Database.AgroContext+TreeBlock", "Block")
                         .WithMany("TreeLocations")
                         .HasForeignKey("BlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlazorApp.Models.Tree", "Tree")
+                    b.HasOne("BlazorApp.Database.AgroContext+Tree", "Tree")
                         .WithOne("TreeLocation")
-                        .HasForeignKey("BlazorApp.Models.TreeLocation", "TreeLocationId")
+                        .HasForeignKey("BlazorApp.Database.AgroContext+TreeLocation", "TreeLocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -338,24 +291,17 @@ namespace BlazorApp.Migrations
                     b.Navigation("Tree");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.Employee", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Employee", b =>
                 {
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.Field", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Field", b =>
                 {
                     b.Navigation("Blocks");
-
-                    b.Navigation("SectionFields");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.SectionField", b =>
-                {
-                    b.Navigation("TreeBlocks");
-                });
-
-            modelBuilder.Entity("BlazorApp.Models.Tree", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+Tree", b =>
                 {
                     b.Navigation("History");
 
@@ -363,12 +309,12 @@ namespace BlazorApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.TreeBlock", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeBlock", b =>
                 {
                     b.Navigation("TreeLocations");
                 });
 
-            modelBuilder.Entity("BlazorApp.Models.TreeLocation", b =>
+            modelBuilder.Entity("BlazorApp.Database.AgroContext+TreeLocation", b =>
                 {
                     b.Navigation("History");
                 });
