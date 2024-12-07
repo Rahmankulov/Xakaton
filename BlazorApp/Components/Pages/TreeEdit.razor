@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @using BlazorApp.Models
 @using BlazorApp.Services
+@using static BlazorApp.Database.AgroContext
 
 @inject TreeService TreeService
 @inject NavigationManager NavigationManager
@@ -21,10 +22,16 @@
         <label for="PlantedDate">Planted Date</label>
         <InputDate id="PlantedDate" class="form-control" @bind-Value="tree.PlantedDate" />
     </div>
-    <div class="form-group">
+    <InputSelect class="form-select" @bind-Value="tree.TreeStatus">
+        @foreach (var statusTree in Enum.GetValues<StatusTree>())
+        {
+            <option value="@statusTree">@statusTree</option>
+        }
+    </InputSelect>
+    @* <div class="form-group">
         <label for="Latitude">Status</label>
         <InputText id="Latitude" class="form-control" @bind-Value="tree.TreeStatus" />
-    </div>
+    </div> *@
     @*
     <div class="form-group">
         <label for="Longitude">Col</label>

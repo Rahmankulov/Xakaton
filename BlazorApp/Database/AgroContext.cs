@@ -160,6 +160,14 @@ namespace BlazorApp.Database
             modelBuilder.Entity<Employee>()
                 .Property(e => e.Role)
                 .HasConversion<string>(); // Enum stored as string
+
+            modelBuilder.Entity<Tree>()
+               .Property(e => e.TreeStatus)
+               .HasConversion<string>(); // Enum stored as string
+
+            modelBuilder.Entity<TreeLocation>()
+               .Property(e => e.LocationTreeStatus)
+               .HasConversion<string>(); // Enum stored as string
         }
 
 
@@ -173,5 +181,29 @@ namespace BlazorApp.Database
             Agronomist,
             Gardener
         }
+
+        public enum StatusTree
+        {
+            Planted,// Посажено
+            Growing,// Растёт
+            FruitBearing, //Плодоносит
+            Dormant, //В состоянии покоя\
+            Diseased, //Болеет
+            Dead, //Мёртвое
+            Harvested, //Собран урожай
+            Removed, // Удален
+
+        }
+
+
+        public enum LocationTreeStatus
+        {
+            Occupied,        // Занято деревом
+            Available,     // Свободно
+            Damaged,         // Повреждено
+            UnderMaintenance,// На обслуживании
+
+        }
+
     }
 }

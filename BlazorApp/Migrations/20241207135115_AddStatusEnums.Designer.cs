@@ -3,6 +3,7 @@ using System;
 using BlazorApp.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     [DbContext(typeof(AgroContext))]
-    partial class DbXContextModelSnapshot : ModelSnapshot
+    [Migration("20241207135115_AddStatusEnums")]
+    partial class AddStatusEnums
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,9 +191,8 @@ namespace BlazorApp.Migrations
                     b.Property<int?>("TreeLocationId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TreeStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("TreeStatus")
+                        .HasColumnType("integer");
 
                     b.HasKey("TreeId");
 
@@ -277,9 +279,8 @@ namespace BlazorApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("LocationTreeStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("LocationTreeStatus")
+                        .HasColumnType("integer");
 
                     b.Property<string>("QRCode")
                         .IsRequired()

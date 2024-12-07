@@ -1,6 +1,7 @@
 ﻿using BlazorApp.Database;
 using BlazorApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.Entity;
 
 namespace BlazorApp.Controllers
 {
@@ -14,19 +15,31 @@ namespace BlazorApp.Controllers
             context = _context;
         }
 
-        /*[HttpGet]
-        [Route("items")]
-        public async Task<List<Items>> GetItems(int id)
+        [HttpGet]
+        [Route("gettreebyid")]
+        public ActionResult<Tree> GetTreeByIdAsync(int treeId)
         {
-            if(id <= 0)
+            var tree = context.Trees
+                .Include(t => t.TreeLocation)
+                .FirstOrDefault(t => t.TreeId == treeId);
+            if (tree == null)
             {
-                //return await Task.FromResult(context.Items.ToList());
+                Console.WriteLine("Данные не получены");
             }
-            else
-            {
-                //return await Task.FromResult(context.Items.Where(i=>i.Id == id).ToList());
-            }
-            return null;
-        }*/
+
+            return Ok(tree);
+        }
+
+
+        [HttpGet]
+        [Route("getalltrees")]
+        public ActionResult<List<Tree>> GetAllTrees()
+        {
+            var trees = context.Trees
+                .Include(t => t.TreeLocation)
+                .ToList();
+
+            return Ok(trees);
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace BlazorApp.Models
         public string RowId { get; set; }
         public string ColId { get; set; }
         public string QRCode { get; set; }
+        public LocationTreeStatus LocationTreeStatus {get;set;}
 
         public Tree Tree { get; set; }
         public ICollection<LocationHistory> History { get; set; }

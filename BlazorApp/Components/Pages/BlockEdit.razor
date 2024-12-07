@@ -1,6 +1,9 @@
 ﻿@page "/treeblock-edit/{TreeBlockId:int?}"
 @using BlazorApp.Models
 @using BlazorApp.Services
+@using QRCoder
+@using System.Drawing
+@using System.Text
 
 @rendermode InteractiveServer
 @inject TreeBlockService TreeBlockService
@@ -18,7 +21,26 @@
     </div>
 
     <div class="form-group">
-        <label for="Field">Field</label>
+        <label for="Name">Высота</label>
+        <InputNumber id="Name" class="form-control" @bind-Value="treeBlock.Height" />
+    </div>
+
+    <div class="form-group">
+        <label for="Name">Ширина</label>
+        <InputNumber id="Name" class="form-control" @bind-Value="treeBlock.Width" />
+    </div>
+
+    <div class="form-group">
+        <label for="Name">Расстояние между грядками</label>
+        <InputNumber id="Name" class="form-control" @bind-Value="treeBlock.RowSpacing" />
+    </div>
+    <div class="form-group">
+        <label for="Name">Расстояние между Деревями</label>
+        <InputNumber id="Name" class="form-control" @bind-Value="treeBlock.ColSpacing" />
+    </div>
+
+    <div class="form-group">
+        <label for="Field">SectionField</label>
         <InputSelect id="Field" class="form-control" @bind-Value="treeBlock.SectionFieldId">
             @foreach (var field in fields)
             {
@@ -27,14 +49,24 @@
         </InputSelect>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-success" >Save</button>
+    
 </EditForm>
+
+<button class="btn btn-primary" @onclick="GenerateQRCodes">Generate QR Codes</button>
+
+@foreach (var qrCode in qrCodeBase64List)
+{
+    <img src="@qrCode" alt="QR Code" />
+}
 
 @code {
     private TreeBlock treeBlock = new TreeBlock();
     private List<SectionField> fields = new List<SectionField>();
     [Parameter]
     public int? TreeBlockId { get; set; }
+
+    List<string> qrCodeBase64List = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,6 +78,39 @@
             treeBlock = await TreeBlockService.GetTreeBlockByIdAsync(TreeBlockId.Value);
         }
     }
+
+    private async Task GenerateQRCodes()
+    {
+        string[] dataToEncode = { "https://example.com/1", 
+        "https://example.com/2", "https://example.com/3", 
+        "https://example.com/4", "https://example.com/5" };
+
+        for (int i = 0; i < dataToEncode.Length; i++)
+        {
+            string data = dataToEncode[i];
+
+            // Генерация QR-кода
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q))
+            using (SvgQRCode qrCode = new SvgQRCode(qrCodeData))
+            {
+
+                string qrCodeImage = qrCode.GetGraphic(20); // 20 - размер пикселя
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    byte[] svgBytes = Encoding.UTF8.GetBytes(qrCodeImage);
+                    ms.Write(svgBytes, 0, svgBytes.Length);
+                    ms.Position = 0;
+                    // Конвертация в Base64
+                    string base64Image = Convert.ToBase64String(ms.ToArray());
+                    qrCodeBase64List.Add($"data:image/png;base64,{base64Image}");
+                }
+            }
+        }
+
+        Console.WriteLine("Все QR-коды успешно созданы.");
+    }
+
 
     private async Task HandleValidSubmit()
     {
