@@ -48,6 +48,7 @@
         if (SectionFieldId != null)
         {
             if (int.TryParse(NavigationManager.Uri.Split('/').LastOrDefault(), out int id)) SectionFieldId = id;
+            sectionField =  SectionFieldService.GetSectionFieldByIdAsync(id);
         }
         fields = SectionFieldService.GetAllFieldsAsync();
     }

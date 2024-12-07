@@ -3,6 +3,7 @@ using System;
 using BlazorApp.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     [DbContext(typeof(AgroContext))]
-    partial class DbXContextModelSnapshot : ModelSnapshot
+    [Migration("20241207115621_FixedBlockFieldRemovedFieldId")]
+    partial class FixedBlockFieldRemovedFieldId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,30 +208,15 @@ namespace BlazorApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BlockId"));
 
-                    b.Property<double>("ColSpacing")
-                        .HasColumnType("double precision");
-
                     b.Property<int?>("FieldId")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("Height")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("LocationCount")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("RowSpacing")
-                        .HasColumnType("double precision");
-
                     b.Property<int?>("SectionFieldId")
                         .HasColumnType("integer");
-
-                    b.Property<double>("Width")
-                        .HasColumnType("double precision");
 
                     b.HasKey("BlockId");
 
@@ -274,10 +262,6 @@ namespace BlazorApp.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("ColId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("QRCode")
                         .IsRequired()
                         .HasColumnType("text");
 

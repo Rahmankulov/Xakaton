@@ -15,7 +15,7 @@ namespace BlazorApp.Services
 
         public List<SectionField> GetAllSectionFieldsAsync()
         {
-            return _context.SectionFields.ToList();
+            return _context.SectionFields.Include(p=>p.Field).ToList();
         }
         // Получить все SectionField
         public  List<Field> GetAllFieldsAsync()
@@ -24,9 +24,9 @@ namespace BlazorApp.Services
         }
 
         // Получить SectionField по ID
-        public async Task<SectionField> GetSectionFieldByIdAsync(int id)
+        public SectionField GetSectionFieldByIdAsync(int id)
         {
-            return await _context.SectionFields.Include(sf => sf.Field).FirstOrDefaultAsync(sf => sf.SectionFieldId == id);
+            return _context.SectionFields.Include(sf => sf.Field).FirstOrDefault(sf => sf.SectionFieldId == id)?? new();
         }
 
         // Создать SectionField

@@ -17,7 +17,7 @@ namespace BlazorApp.Services
         // Получить все TreeBlock
         public async Task<List<TreeBlock>> GetAllTreeBlocksAsync()
         {
-            return await _context.TreeBlocks.ToListAsync();
+            return await _context.TreeBlocks.Include(p=>p.SectionField).ToListAsync();
         }
 
         public async Task<List<SectionField>> GetAllSectionsAsync()

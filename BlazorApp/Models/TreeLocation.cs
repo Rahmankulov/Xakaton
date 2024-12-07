@@ -9,6 +9,8 @@ namespace BlazorApp.Models
         public TreeBlock Block { get; set; }
         public string RowId { get; set; }
         public string ColId { get; set; }
+        public string QRCode { get; set; }
+
         public Tree Tree { get; set; }
         public ICollection<LocationHistory> History { get; set; }
     }
