@@ -21,6 +21,11 @@
     </div>
 
     <div class="form-group">
+        <label for="Name">Вид деревьев</label>
+        <InputText id="Name" class="form-control" @bind-Value="treeBlock.Species" />
+    </div>
+
+    <div class="form-group">
         <label for="Name">Высота</label>
         <InputNumber id="Name" class="form-control" @bind-Value="treeBlock.Height" />
     </div>
@@ -114,6 +119,8 @@
                 treeLocation.LocationTreeStatus = Database.AgroContext.LocationTreeStatus.Available;
                 
                 treeBlock.TreeLocations.Add(treeLocation);
+
+                
 
             }
         }

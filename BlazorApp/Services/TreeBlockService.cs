@@ -34,6 +34,20 @@ namespace BlazorApp.Services
         // Создать TreeBlock
         public async Task CreateTreeBlockAsync(TreeBlock treeBlock)
         {
+            if (treeBlock.TreeLocations!=null)
+            foreach(var treeLoc in treeBlock.TreeLocations)
+            {
+                var tree = new Tree
+                {
+                    TreeLocation = treeLoc,  // Связь с TreeLocation
+                    TreeStatus = AgroContext.StatusTree.Ready
+                };
+                if (treeBlock.Species != null)
+                {
+                    tree.Species = treeBlock.Species;
+                }
+                _context.Trees.Add(tree);
+            }
             _context.TreeBlocks.Add(treeBlock);
             await _context.SaveChangesAsync();
         }

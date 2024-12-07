@@ -94,15 +94,12 @@ namespace BlazorApp.Database
                 .HasForeignKey(l => l.BlockId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-           
-
             // Настройка TreeBlock
 
             modelBuilder.Entity<TreeBlock>()
                 .HasOne(tb => tb.SectionField)
                 .WithMany(sf => sf.TreeBlocks)
                 .HasForeignKey(tb => tb.SectionFieldId);
-
 
             // Связь Task и Tree (один-ко-многим)
             modelBuilder.Entity<EmployeeTask>()
@@ -192,6 +189,7 @@ namespace BlazorApp.Database
             Dead, //Мёртвое
             Harvested, //Собран урожай
             Removed, // Удален
+            Ready
 
         }
 

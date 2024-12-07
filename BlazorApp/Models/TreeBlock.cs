@@ -12,6 +12,7 @@ namespace BlazorApp.Models
         public double ColSpacing { get; set; }
         public int LocationCount { get; set; }
         public int? SectionFieldId { get; set; } // Внешний ключ к SectionField
+        public string Species { get; set; }
         public SectionField? SectionField { get; set; }
         public ICollection<TreeLocation>? TreeLocations { get; set; }
     }
