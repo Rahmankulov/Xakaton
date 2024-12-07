@@ -1,0 +1,66 @@
+﻿@page "/blocks"
+@using BlazorApp.Models
+@using BlazorApp.Services
+
+
+@rendermode InteractiveServer
+@inject TreeBlockService TreeBlockService
+@inject NavigationManager NavigationManager
+
+<h3>Tree Blocks</h3>
+
+@if (treeBlocks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <button class="btn btn-primary mb-2" @onclick="CreateTreeBlock">Add Tree Block</button>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Section</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var treeBlock in treeBlocks)
+            {
+                <tr>
+                    <td>@treeBlock.SectionField?.Name</td>
+                    <td>@treeBlock.Name</td>
+                    <td>
+                        <button class="btn btn-warning" @onclick="() => EditTreeBlock(treeBlock.BlockId)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteTreeBlock(treeBlock.BlockId)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<TreeBlock>? treeBlocks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        treeBlocks = await TreeBlockService.GetAllTreeBlocksAsync();
+    }
+
+    private void CreateTreeBlock()
+    {
+        NavigationManager.NavigateTo("/treeblock-edit");
+    }
+
+    private void EditTreeBlock(int id)
+    {
+        NavigationManager.NavigateTo($"/treeblock-edit/{id}");
+    }
+
+    private async Task DeleteTreeBlock(int id)
+    {
+        await TreeBlockService.DeleteTreeBlockAsync(id);
+        treeBlocks = await TreeBlockService.GetAllTreeBlocksAsync();
+    }
+}

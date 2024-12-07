@@ -3,6 +3,7 @@ using System;
 using BlazorApp.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorApp.Migrations
 {
     [DbContext(typeof(AgroContext))]
-    partial class DbXContextModelSnapshot : ModelSnapshot
+    [Migration("20241207113155_AddEmployeeLogin")]
+    partial class AddEmployeeLogin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,7 +208,7 @@ namespace BlazorApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BlockId"));
 
-                    b.Property<int?>("FieldId")
+                    b.Property<int>("FieldId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -331,15 +334,19 @@ namespace BlazorApp.Migrations
 
             modelBuilder.Entity("BlazorApp.Models.TreeBlock", b =>
                 {
-                    b.HasOne("BlazorApp.Models.Field", null)
+                    b.HasOne("BlazorApp.Models.Field", "Field")
                         .WithMany("Blocks")
-                        .HasForeignKey("FieldId");
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BlazorApp.Models.SectionField", "SectionField")
                         .WithMany("TreeBlocks")
                         .HasForeignKey("SectionFieldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Field");
 
                     b.Navigation("SectionField");
                 });

@@ -17,6 +17,10 @@
         <InputText class="form-control" @bind-Value="employee.FullName" />
     </div>
     <div class="mb-3">
+        <label class="form-label">Login for mobile App</label>
+        <InputText class="form-control" @bind-Value="employee.Login" />
+    </div>
+    <div class="mb-3">
         <label class="form-label">Role</label>
         <InputSelect class="form-select" @bind-Value="employee.Role">
             @foreach (var role in Enum.GetValues<Role>())

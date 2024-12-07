@@ -1,0 +1,62 @@
+﻿@page "/treeblock-edit/{TreeBlockId:int?}"
+@using BlazorApp.Models
+@using BlazorApp.Services
+
+@rendermode InteractiveServer
+@inject TreeBlockService TreeBlockService
+@inject NavigationManager NavigationManager
+
+<h3>@(TreeBlockId != null ? "Edit Tree Block" : "Add Tree Block")</h3>
+
+<EditForm Model="@treeBlock" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <InputText id="Name" class="form-control" @bind-Value="treeBlock.Name" />
+    </div>
+
+    <div class="form-group">
+        <label for="Field">Field</label>
+        <InputSelect id="Field" class="form-control" @bind-Value="treeBlock.SectionField">
+            @foreach (var field in fields)
+            {
+                <option value="@field.FieldId">@field.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    private TreeBlock treeBlock = new TreeBlock();
+    private List<SectionField> fields = new List<SectionField>();
+    [Parameter]
+    public int? TreeBlockId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        fields = await TreeBlockService.GetAllSectionsAsync(); // Assuming you have a service to get all fields.
+
+        if (TreeBlockId != null)
+        {
+            if (int.TryParse(NavigationManager.Uri.Split('/').LastOrDefault(), out int id)) TreeBlockId = id;
+            treeBlock = await TreeBlockService.GetTreeBlockByIdAsync(TreeBlockId.Value);
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (TreeBlockId.HasValue)
+        {
+            await TreeBlockService.UpdateTreeBlockAsync(treeBlock);
+        }
+        else
+        {
+            await TreeBlockService.CreateTreeBlockAsync(treeBlock);
+        }
+        NavigationManager.NavigateTo("/treeblocks");
+    }
+}

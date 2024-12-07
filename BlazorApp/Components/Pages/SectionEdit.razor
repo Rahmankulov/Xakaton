@@ -1,0 +1,67 @@
+﻿@page "/sectionfield-edit/{SectionFieldId:int?}"
+@using BlazorApp.Models
+@using BlazorApp.Services
+
+@rendermode InteractiveServer
+@inject SectionFieldService SectionFieldService
+@inject NavigationManager NavigationManager
+
+<h3>@(SectionFieldId != null ? "Edit SectionField" : "Add SectionField")</h3>
+
+<EditForm Model="@sectionField" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <InputText id="Name" class="form-control" @bind-Value="sectionField.Name" />
+    </div>
+
+    <div class="form-group">
+        <label for="Name">Description</label>
+        <InputText id="Name" class="form-control" @bind-Value="sectionField.Description" />
+    </div>
+
+    <div class="form-group">
+        <label for="Field">Field</label>
+        <InputSelect id="Field" class="form-control" @bind-Value="sectionField.FieldId">
+            @foreach (var field in fields)
+            {
+                <option value="@field.FieldId">@field.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    private SectionField sectionField = new();
+    private List<Field> fields = new List<Field>();
+
+    [Parameter]
+    public int? SectionFieldId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Проверка изменение или добавление если не нул то изменение
+        if (SectionFieldId != null)
+        {
+            if (int.TryParse(NavigationManager.Uri.Split('/').LastOrDefault(), out int id)) SectionFieldId = id;
+        }
+        fields = SectionFieldService.GetAllFieldsAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (SectionFieldId.HasValue)
+        {
+            await SectionFieldService.UpdateSectionFieldAsync(sectionField);
+        }
+        else
+        {
+            await SectionFieldService.CreateSectionFieldAsync(sectionField);
+        }
+        NavigationManager.NavigateTo("/sectionfields");
+    }
+}

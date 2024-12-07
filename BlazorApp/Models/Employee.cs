@@ -7,6 +7,8 @@ namespace BlazorApp.Models
         public int EmployeeId { get; set; }
         public string FullName { get; set; }
         public Role Role { get; set; }
+        public string Login { get; set; }
+
         public ICollection<EmployeeTask> Tasks { get; set; }
     }
 }

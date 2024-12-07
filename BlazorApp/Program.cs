@@ -17,8 +17,9 @@ builder.Services.AddServerSideBlazor();
 
 
 builder.Services.AddScoped<EmployeeService>();
-
 builder.Services.AddScoped<TreeService>();
+builder.Services.AddScoped<SectionFieldService>();
+builder.Services.AddScoped<TreeBlockService>();
 
 builder.Services.AddScoped(sp => new AgroContext(builder.Configuration.GetConnectionString("PostgreConfig")));
 

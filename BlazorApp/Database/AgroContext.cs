@@ -94,12 +94,7 @@ namespace BlazorApp.Database
                 .HasForeignKey(l => l.BlockId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Связь TreeBlock и Field (один-ко-многим)
-            modelBuilder.Entity<TreeBlock>()
-                .HasOne(b => b.Field)
-                .WithMany(f => f.Blocks)
-                .HasForeignKey(b => b.FieldId)
-                .OnDelete(DeleteBehavior.Cascade);
+           
 
             // Настройка TreeBlock
 
